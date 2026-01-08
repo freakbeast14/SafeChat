@@ -20,6 +20,8 @@ import {
   LogOut,
   User,
   Info,
+  Eye,
+  EyeOff,
   Check,
   CheckCheck,
   Mic,
@@ -151,6 +153,12 @@ function App() {
   const [resetMode, setResetMode] = useState<'request' | 'reset' | ''>('')
   const [resetToken, setResetToken] = useState('')
   const [resetNotice, setResetNotice] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [showResetPassword, setShowResetPassword] = useState(false)
+  const [showResetConfirmPassword, setShowResetConfirmPassword] = useState(false)
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [activeId, setActiveId] = useState<string | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
@@ -1584,11 +1592,41 @@ function App() {
             </div>
             <div className="space-y-2">
               <Label>Password</Label>
-              <Input name="password" type="password" required />
+              <div className="relative">
+                <Input
+                  name="password"
+                  type={showResetPassword ? 'text' : 'password'}
+                  required
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  onClick={() => setShowResetPassword((prev) => !prev)}
+                  title={showResetPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showResetPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
             </div>
             <div className="space-y-2">
               <Label>Confirm password</Label>
-              <Input name="confirmPassword" type="password" required />
+              <div className="relative">
+                <Input
+                  name="confirmPassword"
+                  type={showResetConfirmPassword ? 'text' : 'password'}
+                  required
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  onClick={() => setShowResetConfirmPassword((prev) => !prev)}
+                  title={showResetConfirmPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showResetConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
             </div>
             {authError ? (
               <div className="rounded-md bg-red-500/10 p-3 text-sm text-red-400">
@@ -1642,12 +1680,42 @@ function App() {
                   </span>
                 ) : null}
               </Label>
-              <Input name="password" type="password" required />
+              <div className="relative">
+                <Input
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  required
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
             </div>
             {authMode === 'register' ? (
               <div className="space-y-2">
                 <Label>Confirm password</Label>
-                <Input name="confirmPassword" type="password" required />
+                <div className="relative">
+                  <Input
+                    name="confirmPassword"
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    required
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                    title={showConfirmPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
               </div>
             ) : null}
             {authError ? (
@@ -2139,11 +2207,41 @@ function App() {
                   <form className="space-y-4 rounded-2xl glass p-6" onSubmit={updatePassword}>
                     <div className="space-y-2">
                       <Label>Current password</Label>
-                      <Input name="currentPassword" type="password" required />
+                      <div className="relative">
+                        <Input
+                          name="currentPassword"
+                          type={showCurrentPassword ? 'text' : 'password'}
+                          required
+                          className="pr-10"
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                          onClick={() => setShowCurrentPassword((prev) => !prev)}
+                          title={showCurrentPassword ? 'Hide password' : 'Show password'}
+                        >
+                          {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label>New password</Label>
-                      <Input name="newPassword" type="password" required />
+                      <div className="relative">
+                        <Input
+                          name="newPassword"
+                          type={showNewPassword ? 'text' : 'password'}
+                          required
+                          className="pr-10"
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                          onClick={() => setShowNewPassword((prev) => !prev)}
+                          title={showNewPassword ? 'Hide password' : 'Show password'}
+                        >
+                          {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
                     </div>
                     <Button type="submit">Update password</Button>
                   </form>
