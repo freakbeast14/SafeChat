@@ -47,6 +47,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:3001'
+const FORCE_TURN_RELAY = import.meta.env.VITE_TURN_FORCE_RELAY === 'true'
 
 const getToken = () => localStorage.getItem('chatapp_token') || ''
 const setToken = (value: string) => localStorage.setItem('chatapp_token', value)
@@ -1380,9 +1381,13 @@ function App() {
         iceServersRef.current = [{ urls: 'stun:stun.l.google.com:19302' }]
       }
     }
-    const peer = new RTCPeerConnection({
+    const config: RTCConfiguration = {
       iceServers: iceServersRef.current,
-    })
+    }
+    if (FORCE_TURN_RELAY) {
+      config.iceTransportPolicy = 'relay'
+    }
+    const peer = new RTCPeerConnection(config)
     peerRef.current = peer
     peer.onicecandidate = (event) => {
       if (event.candidate) {
