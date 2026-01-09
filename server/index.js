@@ -305,9 +305,14 @@ app.get('/api/turn', async (_req, res) => {
     const filtered = iceServers
       .map((server) => {
         const urls = Array.isArray(server.urls) ? server.urls : [server.urls]
-        const tcpOnly = urls.filter((url) =>
-          String(url).includes('transport=tcp')
+        const tlsTcp = urls.filter(
+          (url) =>
+            String(url).includes('turns:') && String(url).includes('transport=tcp')
         )
+        if (tlsTcp.length > 0) {
+          return { ...server, urls: tlsTcp }
+        }
+        const tcpOnly = urls.filter((url) => String(url).includes('transport=tcp'))
         return tcpOnly.length > 0 ? { ...server, urls: tcpOnly } : null
       })
       .filter(Boolean)
