@@ -302,7 +302,21 @@ app.get('/api/turn', async (_req, res) => {
       throw new Error('TURN API failed')
     }
     const iceServers = await response.json()
-    return res.json({ iceServers })
+    const filtered = iceServers
+      .map((server) => {
+        const urls = Array.isArray(server.urls) ? server.urls : [server.urls]
+        const tcpOnly = urls.filter((url) =>
+          String(url).includes('transport=tcp')
+        )
+        return tcpOnly.length > 0 ? { ...server, urls: tcpOnly } : null
+      })
+      .filter(Boolean)
+    return res.json({
+      iceServers:
+        filtered.length > 0
+          ? filtered
+          : [{ urls: 'stun:stun.l.google.com:19302' }],
+    })
   } catch (error) {
     console.error('TURN API error:', error)
     return res.json({
