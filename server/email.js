@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer'
 const smtpUser = process.env.GMAIL_SMTP_USER || ''
 const smtpPass = process.env.GMAIL_SMTP_PASS || ''
 const serverBaseUrl = process.env.SERVER_BASE_URL || 'http://localhost:3001'
-const appName = 'ChatApp'
+const appName = 'SafeChat'
 
 const createTransporter = () => {
   if (!smtpUser || !smtpPass) {

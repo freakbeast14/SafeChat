@@ -505,10 +505,41 @@ app.post('/api/users/avatar', auth, upload.single('avatar'), async (req, res) =>
     })
     await fs.unlink(req.file.path)
   } else {
+    await fs.mkdir(path.join(uploadsDir, 'avatars'), { recursive: true })
     await fs.rename(req.file.path, path.join(uploadsDir, filename))
   }
   await pool.query('UPDATE users SET avatar_url = $1 WHERE id = $2', [
     filename,
+    req.userId,
+  ])
+  if (previous) {
+    if (useSupabaseStorage) {
+      try {
+        await deleteFromStorage([previous])
+      } catch {
+        // Ignore missing old avatar.
+      }
+    } else {
+      try {
+        await fs.unlink(path.join(uploadsDir, previous))
+      } catch {
+        // Ignore missing old avatar.
+      }
+    }
+  }
+  const result = await pool.query('SELECT * FROM users WHERE id = $1', [
+    req.userId,
+  ])
+  return res.json({ user: sanitizeUser(result.rows[0]) })
+})
+
+app.delete('/api/users/avatar', auth, async (req, res) => {
+  const current = await pool.query('SELECT avatar_url FROM users WHERE id = $1', [
+    req.userId,
+  ])
+  const previous = current.rows[0]?.avatar_url
+  await pool.query('UPDATE users SET avatar_url = $1 WHERE id = $2', [
+    '',
     req.userId,
   ])
   if (previous) {

@@ -1,5 +1,5 @@
 import type { FormEvent } from 'react'
-import { MessageSquare, Info, Eye, EyeOff, Mail } from 'lucide-react'
+import { Info, Eye, EyeOff, Mail } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -318,10 +318,10 @@ const AuthLanding = ({
 
       <header className="relative z-10 flex items-center justify-between px-6 py-6 md:px-12">
         <div className="flex items-center gap-2 text-lg font-semibold">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10">
-            <MessageSquare size={18} />
+          <div className="flex h-9 w-9 items-center justify-center">
+            <img src="/logo.svg" />
           </div>
-          ChatApp
+          SafeChat
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -354,7 +354,7 @@ const AuthLanding = ({
               A sleek, secure chat experience built for focus.
             </h1>
             <p className="text-base text-muted-foreground md:text-lg">
-              ChatApp brings messaging, file sharing, and video calls into one clean
+              SafeChat brings messaging, file sharing, and video calls into one clean
               space. Messages and files auto-expire after 7 days for privacy by
               default.
             </p>
