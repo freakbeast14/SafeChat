@@ -29,9 +29,9 @@ type CallOverlayProps = {
   activeAvatarSrc: string
   userAvatarSrc: string
   user: UserType
-  remoteVideoRef: RefObject<HTMLVideoElement>
-  remoteMiniRef: RefObject<HTMLVideoElement>
-  localVideoRef: RefObject<HTMLVideoElement>
+  remoteVideoRef: RefObject<HTMLVideoElement | null>
+  remoteMiniRef: RefObject<HTMLVideoElement | null>
+  localVideoRef: RefObject<HTMLVideoElement | null>
   onToggleCamera: () => void
   onToggleMic: () => void
   onToggleSpeaker: () => void
