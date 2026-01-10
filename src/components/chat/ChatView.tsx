@@ -420,7 +420,6 @@ const ChatView = ({
                             className={`relative rounded-2xl rounded-bl-none px-4 py-3 text-sm shadow break-all ${
                               message.senderId === user.id
                                 ? 'glass-soft'
-                                // : 'bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-500 text-white'
                                 : 'bg-slate-900/60 text-white'
                             } ${
                               chatSearchMatches.includes(message.id)
@@ -605,7 +604,6 @@ const ChatView = ({
                             className={`rounded-2xl rounded-bl-none px-4 py-3 text-sm shadow break-all ${
                               message.senderId === user.id
                                 ? 'glass-soft'
-                                // : 'bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-500 text-white'
                                 : 'bg-slate-900/60 text-white'
                             } ${
                               chatSearchMatches.includes(message.id)
@@ -912,8 +910,7 @@ const ChatView = ({
         ))}
       </div>
       {typingUsers.length > 0 ? (
-        // <div className="mt-4 w-fit rounded-full rounded-bl-none glass-soft px-4 py-2 text-xs text-muted-foreground bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-500">
-        <div className="mt-4 w-fit rounded-full rounded-bl-none glass-soft px-4 py-2 text-xs text-white bg-slate-900/60">
+        <div className="mt-4 w-fit rounded-full rounded-bl-none px-4 py-2 text-xs text-white bg-slate-900/60">
           <span className="inline-flex items-center gap-1 align-middle">
             <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white [animation-delay:-0.2s]" />
             <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white [animation-delay:-0.1s]" />
