@@ -1,4 +1,4 @@
-import { MessageSquare, Moon, Search, Settings, Sun, User, UserPlus, Users } from 'lucide-react'
+import { Moon, Search, Settings, Sun, User, UserPlus, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { getAvatarSrc } from '@/lib/chat'
 import type { Conversation, User as UserType } from '@/types'

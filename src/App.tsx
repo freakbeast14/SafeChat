@@ -1731,7 +1731,6 @@ function App() {
               imageInputRef={imageInputRef}
               onImageChange={handleImageChange}
               uploadProgress={uploadProgress}
-              uploadFileName={uploadFileName}
               pendingFileName={pendingFileName}
               pendingFilePreview={pendingFilePreview}
               pendingFileIsImage={pendingFileIsImage}

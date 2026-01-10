@@ -46,7 +46,7 @@ type ChatViewProps = {
   chatSearchIndex: number
   onPrevSearchMatch: () => void
   onNextSearchMatch: () => void
-  chatSearchRef: RefObject<HTMLDivElement>
+  chatSearchRef: RefObject<HTMLDivElement | null>
   messageRefs: RefObject<Record<string, HTMLDivElement | null>>
   highlightText: (text: string, query: string, isActive: boolean) => ReactNode
   downloadFile: (fileId: string, fileName: string) => void
@@ -58,12 +58,11 @@ type ChatViewProps = {
   messageText: string
   onMessageTextChange: (value: string) => void
   onSendMessage: () => void
-  fileInputRef: RefObject<HTMLInputElement>
+  fileInputRef: RefObject<HTMLInputElement | null>
   onFileChange: (event: ChangeEvent<HTMLInputElement>) => void
-  imageInputRef: RefObject<HTMLInputElement>
+  imageInputRef: RefObject<HTMLInputElement | null>
   onImageChange: (event: ChangeEvent<HTMLInputElement>) => void
   uploadProgress: number | null
-  uploadFileName: string
   pendingFileName: string
   pendingFilePreview: string
   pendingFileIsImage: boolean
@@ -104,7 +103,6 @@ const ChatView = ({
   imageInputRef,
   onImageChange,
   uploadProgress,
-  uploadFileName,
   pendingFileName,
   pendingFilePreview,
   pendingFileIsImage,
