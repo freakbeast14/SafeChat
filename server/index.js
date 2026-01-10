@@ -389,6 +389,10 @@ app.post('/api/auth/reset', async (req, res) => {
   return res.json({ ok: true })
 })
 
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', time: new Date().toISOString() })
+})
+
 app.get('/api/auth/reset', async (req, res) => {
   const token = String(req.query.token || '')
   const clientOrigin = process.env.CLIENT_ORIGIN || 'http://localhost:5173'
