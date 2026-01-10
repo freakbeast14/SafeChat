@@ -124,6 +124,32 @@ const ChatView = ({
     return ext.slice(0, 6).toUpperCase()
   }
 
+  const renderTextWithLinks = (text: string, isActive: boolean) => {
+    const urlRegex = /(https?:\/\/[^\s]+|www\.[^\s]+)/gi
+    const parts = text.split(urlRegex)
+    return parts.map((part, index) => {
+      if (!part) return null
+      const isUrl = urlRegex.test(part)
+      urlRegex.lastIndex = 0
+      if (isUrl) {
+        const href = part.startsWith('http') ? part : `https://${part}`
+        return (
+          <a
+            key={`link-${index}`}
+            href={href}
+            target="_blank"
+            rel="noreferrer"
+            className="text-indigo-400 dark:text-indigo-300 underline decoration-indigo-400 dark:decoration-indigo-300 underline-offset-2 hover:text-indigo-500 hover:decoration-indigo-500 dark:hover:text-indigo-400 dark:hover:decoration-indigo-400"
+            onClick={(event) => event.stopPropagation()}
+          >
+            {part}
+          </a>
+        )
+      }
+      return highlightText(part, chatSearchQuery, isActive)
+    })
+  }
+
   const isImageFile = (name: string) => {
     const ext = name.split('.').pop()?.toLowerCase() || ''
     return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext)
@@ -394,7 +420,8 @@ const ChatView = ({
                             className={`relative rounded-2xl rounded-bl-none px-4 py-3 text-sm shadow break-all ${
                               message.senderId === user.id
                                 ? 'glass-soft'
-                                : 'bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-500 text-white'
+                                // : 'bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-500 text-white'
+                                : 'bg-slate-900/60 text-white'
                             } ${
                               chatSearchMatches.includes(message.id)
                                 ? isActiveMatch
@@ -415,7 +442,7 @@ const ChatView = ({
                                 }}
                                 style={!isExpanded ? clampStyle : undefined}
                               >
-                                {highlightText(message.text, chatSearchQuery, isActiveMatch)}
+                                {renderTextWithLinks(message.text, isActiveMatch)}
                               </p>
                             ) : message.file ? (
                               isImageFile(message.file.originalName) ? (
@@ -448,7 +475,7 @@ const ChatView = ({
                                   onClick={() =>
                                     downloadFile(message.file!.id, message.file!.originalName)
                                   }
-                                  className="mt-1 flex items-center gap-3 rounded-md bg-foreground/10 p-2 text-left text-sm text-foreground/90 hover:bg-foreground/15"
+                                  className="mt-1 flex items-center gap-3 rounded-md bg-white/10 p-2 text-left text-sm text-white/90 hover:bg-white/15"
                                 >
                                   <div
                                     className={`flex h-9 w-9 items-center justify-center rounded-sm text-[10px] uppercase ${getFileBadgeClass(
@@ -461,9 +488,9 @@ const ChatView = ({
                                     <p className="truncate text-xs font-medium">
                                       {message.file.originalName}
                                     </p>
-                                    <p className="text-[10px] text-foreground/70">Download</p>
+                                    <p className="text-[10px] text-white/70">Download</p>
                                   </div>
-                                  <Download size={16} className="text-foreground/80" />
+                                  <Download size={16} className="text-white/80" />
                                 </button>
                               )
                             ) : null}
@@ -512,7 +539,7 @@ const ChatView = ({
                                   onClick={() =>
                                     downloadFile(message.file!.id, message.file!.originalName)
                                   }
-                                  className="mt-2 flex items-center gap-3 rounded-md bg-foreground/10 p-2 text-left text-sm text-foreground/90 hover:bg-foreground/15"
+                                  className="mt-2 flex items-center gap-3 rounded-md bg-white/10 p-2 text-left text-sm text-white/90 hover:bg-white/15"
                                 >
                                   <div
                                     className={`flex h-9 w-9 items-center justify-center rounded-sm text-[10px] uppercase ${getFileBadgeClass(
@@ -525,9 +552,9 @@ const ChatView = ({
                                     <p className="truncate text-xs font-medium">
                                       {message.file.originalName}
                                     </p>
-                                    <p className="text-[10px] text-foreground/70">Download</p>
+                                    <p className="text-[10px] text-white/70">Download</p>
                                   </div>
-                                  <Download size={16} className="text-foreground/80" />
+                                  <Download size={16} className="text-white/80" />
                                 </button>
                               )
                             ) : null}
@@ -578,7 +605,8 @@ const ChatView = ({
                             className={`rounded-2xl rounded-bl-none px-4 py-3 text-sm shadow break-all ${
                               message.senderId === user.id
                                 ? 'glass-soft'
-                                : 'bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-500 text-white'
+                                // : 'bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-500 text-white'
+                                : 'bg-slate-900/60 text-white'
                             } ${
                               chatSearchMatches.includes(message.id)
                                 ? isActiveMatch
@@ -594,7 +622,7 @@ const ChatView = ({
                                 }}
                                 style={!isExpanded ? clampStyle : undefined}
                               >
-                                {highlightText(message.text, chatSearchQuery, isActiveMatch)}
+                                {renderTextWithLinks(message.text, isActiveMatch)}
                               </p>
                             ) : message.file ? (
                               isImageFile(message.file.originalName) ? (
@@ -617,7 +645,7 @@ const ChatView = ({
                                   onClick={() =>
                                     downloadFile(message.file!.id, message.file!.originalName)
                                   }
-                                  className="mt-1 flex items-center gap-3 rounded-md bg-foreground/10 p-2 text-left text-sm text-foreground/90 hover:bg-foreground/15"
+                                  className="mt-1 flex items-center gap-3 rounded-md bg-white/10 p-2 text-left text-sm text-white/90 hover:bg-white/15"
                                 >
                                   <div
                                     className={`flex h-9 w-9 items-center justify-center rounded-sm text-[10px] uppercase ${getFileBadgeClass(
@@ -630,9 +658,9 @@ const ChatView = ({
                                     <p className="truncate text-xs font-medium">
                                       {message.file.originalName}
                                     </p>
-                                    <p className="text-[10px] text-foreground/70">Download</p>
+                                    <p className="text-[10px] text-white/70">Download</p>
                                   </div>
-                                  <Download size={16} className="text-foreground/80" />
+                                  <Download size={16} className="text-white/80" />
                                 </button>
                               )
                             ) : null}
@@ -671,7 +699,7 @@ const ChatView = ({
                                   onClick={() =>
                                     downloadFile(message.file!.id, message.file!.originalName)
                                   }
-                                  className="mt-2 flex items-center gap-3 rounded-md bg-foreground/10 p-2 text-left text-sm text-foreground/90 hover:bg-foreground/15"
+                                  className="mt-2 flex items-center gap-3 rounded-md bg-white/10 p-2 text-left text-sm text-white/90 hover:bg-white/15"
                                 >
                                   <div
                                     className={`flex h-9 w-9 items-center justify-center rounded-sm text-[10px] uppercase ${getFileBadgeClass(
@@ -684,9 +712,9 @@ const ChatView = ({
                                     <p className="truncate text-xs font-medium">
                                       {message.file.originalName}
                                     </p>
-                                    <p className="text-[10px] text-foreground/70">Download</p>
+                                    <p className="text-[10px] text-white/70">Download</p>
                                   </div>
-                                  <Download size={16} className="text-foreground/80" />
+                                  <Download size={16} className="text-white/80" />
                                 </button>
                               )
                             ) : null}
@@ -719,7 +747,7 @@ const ChatView = ({
                               }}
                               style={!isExpanded ? clampStyle : undefined}
                             >
-                              {highlightText(message.text, chatSearchQuery, isActiveMatch)}
+                              {renderTextWithLinks(message.text, isActiveMatch)}
                             </p>
                           ) : message.file ? (
                             isImageFile(message.file.originalName) ? (
@@ -884,7 +912,8 @@ const ChatView = ({
         ))}
       </div>
       {typingUsers.length > 0 ? (
-        <div className="mt-4 w-fit rounded-full rounded-bl-none glass-soft px-4 py-2 text-xs text-muted-foreground bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-500">
+        // <div className="mt-4 w-fit rounded-full rounded-bl-none glass-soft px-4 py-2 text-xs text-muted-foreground bg-gradient-to-br from-violet-500 via-purple-500 to-indigo-500">
+        <div className="mt-4 w-fit rounded-full rounded-bl-none glass-soft px-4 py-2 text-xs text-white bg-slate-900/60">
           <span className="inline-flex items-center gap-1 align-middle">
             <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white [animation-delay:-0.2s]" />
             <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-white [animation-delay:-0.1s]" />

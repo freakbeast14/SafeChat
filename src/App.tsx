@@ -10,6 +10,7 @@ import FriendsDialog from '@/components/dialogs/FriendsDialog'
 import GroupDialog from '@/components/dialogs/GroupDialog'
 import GroupManageDialog from '@/components/dialogs/GroupManageDialog'
 import SettingsView from '@/components/settings/SettingsView'
+import AvatarCropDialog from '@/components/settings/AvatarCropDialog'
 import type { CallState, Conversation, FriendRequest, Message, User as ChatUser } from '@/types'
 import { API_BASE, fetchJson } from '@/lib/api'
 import { getAvatarSrc, mapMessage } from '@/lib/chat'
@@ -45,6 +46,8 @@ function App() {
   const [showResetConfirmPassword, setShowResetConfirmPassword] = useState(false)
   const [showCurrentPassword, setShowCurrentPassword] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false)
+  const [passwordDirty, setPasswordDirty] = useState(false)
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [activeId, setActiveId] = useState<string | null>(null)
   const [messages, setMessages] = useState<Message[]>([])
@@ -72,6 +75,13 @@ function App() {
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [avatarPreview, setAvatarPreview] = useState('')
   const [avatarName, setAvatarName] = useState('')
+  const [avatarRemovePending, setAvatarRemovePending] = useState(false)
+  const [profileDirty, setProfileDirty] = useState(false)
+  const [avatarDraftFile, setAvatarDraftFile] = useState<File | null>(null)
+  const [avatarCropOpen, setAvatarCropOpen] = useState(false)
+  const [avatarCropSrc, setAvatarCropSrc] = useState('')
+  const [avatarCropScale, setAvatarCropScale] = useState(1)
+  const [avatarCropOffset, setAvatarCropOffset] = useState({ x: 0, y: 0 })
   const [chatSearchOpen, setChatSearchOpen] = useState(false)
   const [chatSearchQuery, setChatSearchQuery] = useState('')
   const [chatSearchIndex, setChatSearchIndex] = useState(0)
@@ -515,6 +525,11 @@ function App() {
     if (!avatarPreview) return
     return () => URL.revokeObjectURL(avatarPreview)
   }, [avatarPreview])
+
+  useEffect(() => {
+    if (!avatarCropSrc) return
+    return () => URL.revokeObjectURL(avatarCropSrc)
+  }, [avatarCropSrc])
 
   useEffect(() => {
     setTypingUsers([])
@@ -1050,12 +1065,20 @@ function App() {
     const form = new FormData(event.currentTarget)
     const displayName = String(form.get('displayName') || '').trim()
     const email = String(form.get('email') || '').trim()
+    if (avatarRemovePending) {
+      await fetchJson('/api/users/avatar', {
+        method: 'DELETE',
+        headers: authHeader,
+      })
+      setAvatarRemovePending(false)
+    }
     const data = await fetchJson('/api/users/me', {
       method: 'PATCH',
       headers: authHeader,
       body: JSON.stringify({ displayName, email }),
     })
     setUser(data.user)
+    setProfileDirty(false)
   }
 
   const updatePassword = async (event: FormEvent<HTMLFormElement>) => {
@@ -1063,12 +1086,18 @@ function App() {
     const form = new FormData(event.currentTarget)
     const currentPassword = String(form.get('currentPassword') || '')
     const newPassword = String(form.get('newPassword') || '')
+    const confirmNewPassword = String(form.get('confirmNewPassword') || '')
+    if (!newPassword || newPassword !== confirmNewPassword) {
+      window.alert('Passwords do not match.')
+      return
+    }
     await fetchJson('/api/users/password', {
       method: 'PATCH',
       headers: authHeader,
       body: JSON.stringify({ currentPassword, newPassword }),
     })
     event.currentTarget.reset()
+    setPasswordDirty(false)
   }
 
   const markConversationRead = async (conversationId: string) => {
@@ -1247,9 +1276,16 @@ function App() {
   const handleAvatarSelect = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
-    setAvatarFile(file)
-    setAvatarName(file.name)
-    setAvatarPreview(URL.createObjectURL(file))
+    if (avatarCropSrc) {
+      URL.revokeObjectURL(avatarCropSrc)
+    }
+    setAvatarDraftFile(file)
+    setAvatarCropSrc(URL.createObjectURL(file))
+    setAvatarCropScale(1)
+    setAvatarCropOffset({ x: 0, y: 0 })
+    setAvatarCropOpen(true)
+    setAvatarRemovePending(false)
+    setProfileDirty(true)
     event.target.value = ''
   }
 
@@ -1269,6 +1305,77 @@ function App() {
     setAvatarFile(null)
     setAvatarName('')
     setAvatarPreview('')
+    setAvatarDraftFile(null)
+    setAvatarCropSrc('')
+    setProfileDirty(false)
+  }
+
+  const handleAvatarRemove = () => {
+    setAvatarRemovePending(true)
+    setAvatarFile(null)
+    setAvatarName('')
+    setAvatarPreview('')
+    setAvatarDraftFile(null)
+    setAvatarCropSrc('')
+    setProfileDirty(true)
+  }
+
+  const handleAvatarCropApply = (blob: Blob) => {
+    const name = avatarDraftFile?.name || 'avatar.png'
+    const file = new File([blob], name, { type: blob.type || 'image/png' })
+    setAvatarFile(file)
+    setAvatarName(file.name)
+    if (avatarPreview) {
+      URL.revokeObjectURL(avatarPreview)
+    }
+    setAvatarPreview(URL.createObjectURL(blob))
+    setAvatarCropOpen(false)
+    setAvatarDraftFile(null)
+    setProfileDirty(true)
+  }
+
+  const handleAvatarCropClose = () => {
+    setAvatarCropOpen(false)
+    setAvatarDraftFile(null)
+    setAvatarCropSrc('')
+  }
+
+  const handleAvatarCropEdit = () => {
+    if (!avatarFile && !avatarPreview) return
+    if (avatarCropSrc) {
+      URL.revokeObjectURL(avatarCropSrc)
+    }
+    if (avatarFile) {
+      setAvatarDraftFile(avatarFile)
+      setAvatarCropSrc(URL.createObjectURL(avatarFile))
+    } else if (avatarPreview) {
+      fetch(avatarPreview)
+        .then((response) => response.blob())
+        .then((blob) => {
+          const file = new File([blob], avatarName || 'avatar.png', {
+            type: blob.type || 'image/png',
+          })
+          setAvatarDraftFile(file)
+          setAvatarCropSrc(URL.createObjectURL(blob))
+        })
+        .catch(() => {})
+    }
+    setAvatarCropScale(1)
+    setAvatarCropOffset({ x: 0, y: 0 })
+    setAvatarCropOpen(true)
+  }
+
+  const handleAvatarCropReset = () => {
+    setAvatarCropScale(1)
+    setAvatarCropOffset({ x: 0, y: 0 })
+  }
+
+  const handleProfileFieldChange = () => {
+    setProfileDirty(true)
+  }
+
+  const handlePasswordFieldChange = () => {
+    setPasswordDirty(true)
   }
 
   const startRingtone = () => {
@@ -1632,8 +1739,10 @@ function App() {
             avatarName={avatarName}
             avatarFile={avatarFile}
             userAvatarSrc={getAvatarSrc(user)}
+            avatarRemovePending={avatarRemovePending}
             showCurrentPassword={showCurrentPassword}
             showNewPassword={showNewPassword}
+            showConfirmPassword={showConfirmNewPassword}
             ringtoneEnabled={ringtoneEnabled}
             ringtoneVolume={ringtoneVolume}
             ringtoneChoice={ringtoneChoice}
@@ -1641,19 +1750,28 @@ function App() {
             pingVolume={pingVolume}
             pingChoice={pingChoice}
             onUpdateProfile={updateProfile}
+            onProfileChange={handleProfileFieldChange}
             onUpdatePassword={updatePassword}
+            onPasswordChange={handlePasswordFieldChange}
             onAvatarSelect={handleAvatarSelect}
             onAvatarUpload={handleAvatarUpload}
+            onAvatarRemove={handleAvatarRemove}
+            onAvatarEditCrop={handleAvatarCropEdit}
             onToggleShowCurrentPassword={() =>
               setShowCurrentPassword((prev) => !prev)
             }
             onToggleShowNewPassword={() => setShowNewPassword((prev) => !prev)}
+            onToggleShowConfirmPassword={() =>
+              setShowConfirmNewPassword((prev) => !prev)
+            }
             onRingtoneEnabledChange={() => setRingtoneEnabled((prev) => !prev)}
             onRingtoneVolumeChange={setRingtoneVolume}
             onRingtoneChoiceChange={setRingtoneChoice}
             onPingEnabledChange={() => setPingEnabled((prev) => !prev)}
             onPingVolumeChange={setPingVolume}
             onPingChoiceChange={setPingChoice}
+            profileDirty={profileDirty}
+            passwordDirty={passwordDirty}
             onSignOut={() => {
               clearToken()
               setAuthToken('')
@@ -1841,6 +1959,17 @@ function App() {
         onToggleMinimized={setCallMinimized}
         renderWaveform={renderWaveform}
         onRemoteVideoReady={setRemoteVideoReady}
+      />
+      <AvatarCropDialog
+        open={avatarCropOpen}
+        imageSrc={avatarCropSrc}
+        scale={avatarCropScale}
+        offset={avatarCropOffset}
+        onScaleChange={setAvatarCropScale}
+        onOffsetChange={setAvatarCropOffset}
+        onClose={handleAvatarCropClose}
+        onApply={handleAvatarCropApply}
+        onReset={handleAvatarCropReset}
       />
     </div>
   )
