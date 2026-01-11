@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Button } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button'
 
 const HomePage = () => {
   const features = [
@@ -73,12 +73,12 @@ const HomePage = () => {
           SafeChat
         </div>
         <div className="flex items-center gap-2">
-          <Button asChild variant="ghost">
-            <Link to="/login">Sign in</Link>
-          </Button>
-          <Button asChild>
-            <Link to="/register">Get started</Link>
-          </Button>
+          <Link to="/login" className={buttonVariants({ variant: 'ghost' })}>
+            Sign in
+          </Link>
+          <Link to="/register" className={buttonVariants({})}>
+            Get started
+          </Link>
         </div>
       </header>
 
@@ -98,12 +98,15 @@ const HomePage = () => {
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Button asChild className="px-6">
-              <Link to="/register">Create account</Link>
-            </Button>
-            <Button asChild variant="outline" className="px-6">
-              <Link to="/login">Sign in</Link>
-            </Button>
+            <Link to="/register" className={buttonVariants({ className: 'px-6' })}>
+              Create account
+            </Link>
+            <Link
+              to="/login"
+              className={buttonVariants({ variant: 'outline', className: 'px-6' })}
+            >
+              Sign in
+            </Link>
           </div>
           <div className="mt-2 relative">
             <div className="relative rounded-2xl border border-white/10 bg-white/5 p-6">

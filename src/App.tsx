@@ -1921,6 +1921,7 @@ function App() {
     </div>
   )
 
+  const currentUser = user as ChatUser
   const chatShell = (
     <div className="h-screen w-screen overflow-hidden">
       <div className="flex h-full flex-col md:flex-row">
@@ -1932,7 +1933,7 @@ function App() {
               setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))
             }
             onBackToChat={() => setView('chat')}
-            user={user}
+            user={currentUser}
             avatarPreview={avatarPreview}
             avatarName={avatarName}
             avatarFile={avatarFile}
@@ -1980,7 +1981,7 @@ function App() {
               className="hidden md:block m-4"
               groupedConversations={groupedConversations}
               activeId={activeId}
-              user={user}
+              user={currentUser}
               onlineUsers={onlineUsers}
               chatSearch={chatSearch}
               onChatSearchChange={setChatSearch}
@@ -1999,7 +2000,7 @@ function App() {
               activeName={activeName}
               activeSubtitle={activeSubtitle}
               activeAvatarSrc={activeAvatarSrc}
-              user={user}
+              user={currentUser}
               groupedMessages={groupedMessages}
               typingUsers={typingUsers}
               chatSearchOpen={chatSearchOpen}
@@ -2060,7 +2061,7 @@ function App() {
                     className="m-0 h-full w-full max-w-none"
                     groupedConversations={groupedConversations}
                     activeId={activeId}
-                    user={user}
+                    user={currentUser}
                     onlineUsers={onlineUsers}
                     chatSearch={chatSearch}
                     onChatSearchChange={setChatSearch}
@@ -2119,7 +2120,7 @@ function App() {
         open={groupManageOpen}
         onOpenChange={setGroupManageOpen}
         activeConversation={activeConversation}
-        user={user}
+        user={currentUser}
         friends={friends}
         manageMembers={manageMembers}
         onToggleManageMember={(userId, checked) => {
@@ -2146,7 +2147,7 @@ function App() {
         activeName={activeName}
         activeAvatarSrc={activeAvatarSrc}
         userAvatarSrc={getAvatarSrc(user)}
-        user={user}
+        user={currentUser}
         remoteVideoRef={remoteVideoRef}
         remoteMiniRef={remoteMiniRef}
         localVideoRef={localVideoRef}
