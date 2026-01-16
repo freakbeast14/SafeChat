@@ -23,8 +23,7 @@ SafeChat is designed for small teams and families who want:
 
 ## Website
 
-- Local: http://localhost:5173
-- Production: set to your deployed frontend URL
+- https://safechat-g8uz.onrender.com/
 
 ## Architecture
 
